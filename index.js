@@ -7,6 +7,7 @@ const server = require("http").createServer(app);
 const io = require("socket.io")(server);
 const config = require("./config/key");
 
+//hello
 const mongoose = require("mongoose");
 const connect = mongoose.connect(config.mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('MongoDB Connected...'))
@@ -41,7 +42,7 @@ var storage = multer.diskStorage({
   //   cb(null, true)
   // }
 })
- 
+
 var upload = multer({ storage: storage }).single("file")
 
 app.post("/api/chat/uploadfiles", auth ,(req, res) => {
