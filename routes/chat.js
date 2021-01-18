@@ -16,8 +16,7 @@ router.get("/getChats",async (req, res) => {
 
 router.get("/getChats/:groupId",async (req, res) => {
   var groupId=req.params.groupId
-  console.log("groupId")
-  console.log(groupId)
+
     await Chat.find({group:groupId})
         .populate("sender")
         .exec((err, chats) => {
@@ -50,7 +49,6 @@ newGroup.save((err) => {
 
 
 router.get("/getGroups",(req, res, next) => {
-console.log("getting group data")
  Group.find()
         .exec((err, groups) => {
             console.log(groups)
