@@ -7,7 +7,11 @@ const chatSchema = mongoose.Schema({
         },
     sender: {
         type: Schema.Types.ObjectId,
-        ref: 'User' 
+        ref: 'User'
+    },
+    group:{
+      type:Schema.Types.ObjectId,
+      ref:'Group'
     },
     type: {
         type: String

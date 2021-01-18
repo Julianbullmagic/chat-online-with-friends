@@ -7,7 +7,7 @@ const server = require("http").createServer(app);
 const io = require("socket.io")(server);
 const config = require("./config/key");
 
-//hello
+
 const mongoose = require("mongoose");
 const connect = mongoose.connect(config.mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('MongoDB Connected...'))
@@ -59,8 +59,9 @@ io.on("connection", socket => {
   socket.on("Input Chat Message", msg => {
 
     connect.then(db => {
+      console.log(msg)
       try {
-          let chat = new Chat({ message: msg.chatMessage, sender:msg.userId, type: msg.type })
+          let chat = new Chat({ message: msg.chatMessage, sender:msg.userId, group:msg.groupId, type: msg.type })
 
           chat.save((err, doc) => {
             console.log(doc)

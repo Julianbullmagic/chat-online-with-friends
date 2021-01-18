@@ -3,15 +3,49 @@ import { Form, Icon, Input, Button, Row, Col, } from 'antd';
 import io from "socket.io-client";
 import { connect } from "react-redux";
 import moment from "moment";
-import { getChats, afterPostMessage } from "../../../_actions/chat_actions"
+import { getChats, getGroupChats, afterPostMessage } from "../../../_actions/chat_actions"
 import ChatCard from "./Sections/ChatCard"
 import Dropzone from 'react-dropzone';
 import Axios from 'axios';
+import CreateGroupForm from './CreateGroupForm'
+import { CHAT_SERVER } from './Config.js';
+
 
 export class ChatPage extends Component {
-    state = {
-        chatMessage: "",
-    }
+
+constructor(props){
+  super(props)
+  this.state = {
+      chatMessage: "",
+      groups:[],
+      chosengroup:'',
+      group:{},
+  }
+  this.handleGroupChange=this.handleGroupChange.bind(this)
+  this.getGroupChat=this.getGroupChat.bind(this)
+
+  fetch(`/api/chat/getGroups`).then(res => {
+          return res.json();
+        }).then(info=>{
+          console.log("groups")
+          console.log(info)
+          this.setState({groups:info})
+        })
+}
+
+handleGroupChange(event){
+  var group=event.target.value
+  this.setState({chosengroup: event.target.value });
+  console.log(CHAT_SERVER)
+this.getGroupChat(event.target.value)
+
+}
+
+getGroupChat(group){
+  fetch(`${CHAT_SERVER}/getChats/${group}`)
+      .then(response => response.json())
+      .then(data=>this.props.dispatch(getGroupChats(data)))
+}
 
     componentDidMount() {
         let server = "http://localhost:5000";
@@ -19,6 +53,7 @@ export class ChatPage extends Component {
         this.props.dispatch(getChats());
 
         this.socket = io(server);
+
 
         this.socket.on("Output Chat Message", messageFromBackEnd => {
             console.log(messageFromBackEnd)
@@ -30,17 +65,16 @@ export class ChatPage extends Component {
         this.messagesEnd.scrollIntoView({ behavior: 'smooth' });
     }
 
-    hanleSearchChange = (e) => {
+    handleSearchChange = (e) => {
         this.setState({
             chatMessage: e.target.value
         })
+
+
     }
 
-    renderCards = () =>
-        this.props.chats.chats
-        && this.props.chats.chats.map((chat) => (
-            <ChatCard key={chat._id}  {...chat} />
-        ));
+
+
 
     onDrop = (files) => {
         console.log(files)
@@ -69,7 +103,6 @@ export class ChatPage extends Component {
                     let userImage = this.props.user.userData.image;
                     let nowTime = moment();
                     let type = "VideoOrImage"
-
                     this.socket.emit("Input Chat Message", {
                         chatMessage,
                         userId,
@@ -83,6 +116,8 @@ export class ChatPage extends Component {
     }
 
 
+
+
     submitChatMessage = (e) => {
         e.preventDefault();
 
@@ -92,7 +127,7 @@ export class ChatPage extends Component {
 
 
 
-
+        let groupId=this.state.chosengroup
         let chatMessage = this.state.chatMessage
         let userId = this.props.user.userData._id
         let userName = this.props.user.userData.name;
@@ -104,6 +139,7 @@ export class ChatPage extends Component {
             chatMessage,
             userId,
             userName,
+            groupId,
             userImage,
             nowTime,
             type
@@ -111,18 +147,46 @@ export class ChatPage extends Component {
         this.setState({ chatMessage: "" })
     }
 
+
+
+
+
     render() {
-        return (
+      var chats=  <p>No conversation so far.</p>
+
+if(this.props.chats.chats){
+  chats=this.props.chats.chats.map(chat =>{
+    return (
+      <ChatCard key={chat._id}  {...chat} />
+    )
+  })}
+
+
+      var mappedgroups=  <option value="no groups">no groups</option>
+      if(this.state.groups){
+        mappedgroups=this.state.groups.map(group=>{
+          return(
+              <option key={group._id} value={group._id}>{group.title}</option>
+          )
+        })
+      }return (
             <React.Fragment>
                 <div>
                     <p style={{ fontSize: '2rem', textAlign: 'center' }}> Real Time Chat</p>
                 </div>
-
+<h1>Choose a Group</h1>
+<form onSubmit={this.setGroup}>
+  <div className="form-control">
+    <label htmlFor="room">Room</label>
+    <select name="room" id="room" onChange={this.handleGroupChange}>
+      {mappedgroups}
+    </select>
+  </div>
+  <button type="submit" className="btn">Join Chat</button>
+</form>
                 <div style={{ maxWidth: '800px', margin: '0 auto' }}>
                     <div className="infinite-container" style={{ height: '500px', overflowY: 'scroll' }}>
-                        {this.props.chats && (
-                            this.renderCards()
-                        )}
+                        {chats}
                         <div
                             ref={el => {
                                 this.messagesEnd = el;
@@ -140,7 +204,7 @@ export class ChatPage extends Component {
                                     placeholder="Let's start talking"
                                     type="text"
                                     value={this.state.chatMessage}
-                                    onChange={this.hanleSearchChange}
+                                    onChange={this.handleSearchChange}
                                 />
                             </Col>
                             <Col span={2}>
@@ -166,6 +230,7 @@ export class ChatPage extends Component {
                         </Form>
                     </Row>
                 </div>
+              <CreateGroupForm />
             </React.Fragment>
         )
     }
