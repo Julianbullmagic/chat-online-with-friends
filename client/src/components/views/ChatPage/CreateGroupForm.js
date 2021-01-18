@@ -38,6 +38,7 @@ setToggle(!toggle)
   return (
     <section className='section search'>
     <h1>Create a Group</h1>
+    <div class="form-style-5">
       <form className='search-form' onSubmit={handleSubmit}>
         <div className='form-control'>
         <label htmlFor='name'>Title</label>
@@ -61,5 +62,6 @@ setToggle(!toggle)
           <input type="submit" value="Submit" />
         </div>
       </form>
+      </div>
     </section>
   )}
