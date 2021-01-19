@@ -1,4 +1,5 @@
 import React, {useRef,useState} from 'react'
+import { Button } from 'antd';
 
 
 
@@ -10,8 +11,6 @@ const [toggle, setToggle] = useState(false);
 
 
 function handleSubmit(e) {
-
-e.preventDefault()
 
     const newGroup={
       title: titleValue.current.value,
@@ -37,9 +36,9 @@ setToggle(!toggle)
 
   return (
     <section className='section search'>
-    <h1>Create a Group</h1>
-    <div class="form-style-5">
-      <form className='search-form' onSubmit={handleSubmit}>
+    <h3>Create a Group</h3>
+    <div className="form-style-5">
+      <form className='search-form'>
         <div className='form-control'>
         <label htmlFor='name'>Title</label>
         <input
@@ -58,8 +57,9 @@ setToggle(!toggle)
 
         />
 
-
-          <input type="submit" value="Submit" />
+        <Button type="primary" style={{ width: '30%' }} onClick={handleSubmit} htmlType="submit">
+        Submit Group
+        </Button>
         </div>
       </form>
       </div>

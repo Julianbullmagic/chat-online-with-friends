@@ -174,7 +174,8 @@ if(this.props.chats.chats){
                 <div>
                     <p style={{ fontSize: '2rem', textAlign: 'center' }}> Real Time Chat</p>
                 </div>
-<h1>Choose a Group</h1>
+<h2>Choose a Group</h2>
+<div className="form-style-5">
 <form onSubmit={this.setGroup}>
   <div className="form-control">
     <label htmlFor="room">Room</label>
@@ -182,8 +183,8 @@ if(this.props.chats.chats){
       {mappedgroups}
     </select>
   </div>
-  <button type="submit" className="btn">Join Chat</button>
 </form>
+</div>
                 <div style={{ maxWidth: '800px', margin: '0 auto' }}>
                     <div className="infinite-container" style={{ height: '500px', overflowY: 'scroll' }}>
                         {chats}
