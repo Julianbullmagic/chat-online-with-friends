@@ -2,12 +2,10 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
-
+const path = require('path');
 const server = require("http").createServer(app);
 const io = require("socket.io")(server);
 const config = require("./config/key");
-
-
 
 
 const mongoose = require("mongoose");
@@ -61,7 +59,6 @@ io.on("connection", socket => {
   socket.on("Input Chat Message", msg => {
 
     connect.then(db => {
-      console.log(msg)
       try {
           let chat = new Chat({ message: msg.chatMessage, sender:msg.userId, group:msg.groupId, type: msg.type })
 
